@@ -1,0 +1,3 @@
+.ssc-venv/
+.DS_Store
+*.pyc
