@@ -4,7 +4,7 @@ import numpy as np
 
 
 class OutlierRemover(BaseEstimator, TransformerMixin):
-    def __init__(self, factor=1.5, handling_type="cap"):
+    def __init__(self, factor=1.5, handling_type=None):
         self.factor = factor
         self.handling_type = handling_type
         self.lower_bound = []
@@ -27,21 +27,20 @@ class OutlierRemover(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame, y=None):
+        df = X.copy()
         if self.handling_type == "cap":
-            for col in self.num_features:
-                df.loc[df[col] < self.lower_bound[col], col] = self.lower_bound[col]
+            for i,col in enumerate(X.columns):
+                df.loc[df[col] < self.lower_bound[i], col] = self.lower_bound[i]
 
-                df.loc[df[col] > self.upper_bound[col], col] = self.upper_bound[col]
+                df.loc[df[col] > self.upper_bound[i], col] = self.upper_bound[i]
 
         else:
-            df = pd.DataFrame(
-                df
-            ).copy()  # convert X into Pandas dataframe to use .iloc[:, i]
             for i in range(df.shape[1]):
                 x = df.iloc[:, i].copy()
                 x[(x < self.lower_bound[i]) | (x > self.upper_bound[i])] = np.nan
                 df.iloc[:, i] = x
-            self.columns = df.columns
+            
+        self.columns = df.columns
         return df
 
     def get_feature_names_out(self, feature_names):

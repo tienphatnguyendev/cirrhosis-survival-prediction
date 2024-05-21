@@ -5,3 +5,6 @@ seaborn
 scikit-learn
 tabulate
 imbalanced-learn
+optuna
+plotly
+nbformat>=4.2.0
